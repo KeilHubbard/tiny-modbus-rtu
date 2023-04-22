@@ -17,7 +17,7 @@ Designed specifically to allow support for custom function codes and messages.
 
 
 ## Requirements:
-* python >= 3.2.6
+* python >= 3.6.0
 * pySerial >= 3.0
 
 
