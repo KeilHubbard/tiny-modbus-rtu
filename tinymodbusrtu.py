@@ -6,8 +6,8 @@ __author__ = "Keil Hubbard"
 __license__ = "MIT"
 __version__ = "0.0.1"
 
-if sys.version_info < (3, 2, 6):
-    raise ImportError("Python Version Must be >=3.2.6")
+if sys.version_info < (3, 6, 0):
+    raise ImportError("Python Version Must be >=3.6.0")
 
 
 class TinyModbusRTU:
