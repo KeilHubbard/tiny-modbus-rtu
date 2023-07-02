@@ -2,11 +2,11 @@ import sys
 import time
 import serial
 from multiprocessing import Process, Queue
-from rtumessage import RtuMessage, RtuRequest, RtuResponse, RtuMessageError
+from .rtumessage import RtuMessage, RtuRequest, RtuResponse, RtuMessageError
 
 __author__ = "Keil Hubbard"
 __license__ = "MIT"
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 if sys.version_info < (3, 6, 0):
     raise ImportError("Python Version Must be >=3.6.0")
@@ -39,7 +39,7 @@ COIL_OFF = 0x0000
 
 class TinyModbusRtu:
     """
-    TinyModbusRtu Class for communicating with Modbus RTU servers
+    TinyModbusRtu Class for communicating with Modbus RTU
 
     Supports Modbus RTU Protocol over Serial ONLY.
         NOT SUPPORTED: ASCII Protocol, Modbus over TCP
@@ -90,6 +90,11 @@ class TinyModbusRtu:
                  serial_connection: serial.Serial = None,
                  crc_enabled: bool = True,
                  timeout: float = 0.5):
+        """
+        :param serial_connection: Active PySerial Object to use as transport layer
+        :param crc_enabled: Whether to include crc16 integrity check bytes
+        :param timeout: Time to wait for messages before closing transport layer
+        """
 
         self._frame_time = TinyModbusRtu._calculate_frame_time(serial_connection.baudrate)
         self._crc_enabled = crc_enabled
@@ -148,6 +153,7 @@ class TinyModbusRtu:
         self._connection.close()
 
     def _run_listener(self, queue: Queue) -> None:
+        """Background listening process"""
         self._connection.open()
 
         message = RtuMessage()
@@ -176,7 +182,7 @@ class TinyModbusRtu:
 
     def listen(self) -> RtuMessage:
         """
-        Open underlying serial connection and listen indefinitely for any incoming requests
+        Listen for incoming messages
         Terminates upon receiving a complete message, must call listen() again to receive another message
 
         :return: message received
@@ -246,6 +252,7 @@ class TinyModbusRtu:
 
 
 class TinyModbusClient(TinyModbusRtu):
+    """ Client Object for communicating with one or more MODBUS RTU Servers """
 
     def _read(self, server_id: int, function_code: int, address: int, count: int) -> bytes:
         """
@@ -291,6 +298,13 @@ class TinyModbusClient(TinyModbusRtu):
 
     def _send_custom(self, server_id: int, function_code: int, data_bytes: bytes = b'') -> bytes:
         """
+        Send a fully custom rtu message
+
+        :param server_id: Intended Recipient
+        :param function_code: Function code of request
+        :param data_bytes: Raw data bytes to send
+
+        :return: data bytes of response message
         """
         message = RtuMessage(server_id=server_id,
                              function_code=function_code,
@@ -482,7 +496,8 @@ class TinyModbusServer(TinyModbusRtu):
         return self.listen()
 
     def respond_to_read_request(self, function_code: int, byte_count: int, data: list[int]):
-        pass
+        if len(data) == byte_count:
+            pass
 
     def respond_to_write_request(self):
         pass
