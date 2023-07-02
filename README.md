@@ -1,5 +1,5 @@
 # tiny-modbus-rtu
-Modbus RTU Client library for communicating with Modbus RTU Servers over RS485
+Modbus RTU Client library for communicating with Modbus RTU Servers over Serial
 
 Developed as an alternative to the existing modbus libraries that include support for all Modbus Protocols and do not allow custom messages. TinyModbusRTU supports only a single protocol and transmission layer.  
 
@@ -24,4 +24,3 @@ Designed specifically to allow support for custom function codes and messages.
 ## Not-Supported:
 * MODBUS-ASCII
 * MODBUS OVER TCP
-* MODBUS OVER RS232
