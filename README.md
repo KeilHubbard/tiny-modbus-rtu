@@ -24,3 +24,9 @@ Designed specifically to allow support for custom function codes and messages.
 ## Not-Supported:
 * MODBUS-ASCII
 * MODBUS OVER TCP
+
+## Installation:
+```pip install tinymodbusrtu```
+
+## Documentation:
+https://tinymodbusrtu.readthedocs.com
