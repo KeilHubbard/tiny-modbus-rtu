@@ -29,4 +29,4 @@ Designed specifically to allow support for custom function codes and messages.
 ```pip install tinymodbusrtu```
 
 ## Documentation:
-https://tinymodbusrtu.readthedocs.com
+https://tinymodbusrtu.readthedocs.io
