@@ -17,7 +17,14 @@ MAXIMUM_MESSAGE_BYTES = 256
 
 
 class RtuMessage:
+    """
+    Initiate an RtuMessage object
 
+    :param server_id: Server Id of intended message recipient
+    :param function_code: Function Code of action to be performed
+    :param data_bytes: Raw data bytes of message
+    :param crc_bytes: Bytes for crc16 integrity check
+    """
     _server_id: int
     _function_code: int
     _data_bytes: bytes
@@ -104,41 +111,17 @@ class RtuMessage:
         return BYTES_PER_SERVER_ID + BYTES_PER_FUNCTION_CODE + len(self._data_bytes) + len(self._crc_bytes)
 
 
-class RtuResponse(RtuMessage):
-
-    _byte_count: int
-    _response_data: list[int]
-
-    def __init__(self, 
-                 server_id: int = None,
-                 function_code: int = None,
-                 byte_count: int = None,
-                 response_data: list[int] = None,
-                 crc_bytes: bytes = b'') -> None:
-        
-        self._byte_count = byte_count
-        self._response_data = response_data
-
-        super().__init__(server_id=server_id, 
-                         function_code=function_code, 
-                         data_bytes=self._build_data(), 
-                         crc_bytes=crc_bytes)
-
-    def _build_data(self) -> bytes:
-        byte_count_bytes = response_data_bytes = b''
-
-        if self._byte_count is not None:
-            byte_count_bytes = self._byte_count.to_bytes(BYTES_PER_BYTE_COUNT, 'big')
-
-        if self._response_data is not None:
-            for item in self._response_data:
-                response_data_bytes += item.to_bytes(BYTES_PER_VALUE, 'big')
-
-        return byte_count_bytes + response_data_bytes
-
-
 class RtuRequest(RtuMessage):
-    
+    """
+    Rtu Request Object
+
+    :param server_id: Intended Recipient's Server Id
+    :param function_code: Function Code of Request
+    :param address: Address to Start Reading OR Address to Write
+    :param count: Count of Registers to Read, Do Not Provide for Write Requests
+    :param value: Value to Write to Given Address, Do Not Provide for Read Requests
+    :param crc_bytes: crc16 Value of Request
+    """
     _address: int
     _count: int
     _value: int
@@ -150,15 +133,6 @@ class RtuRequest(RtuMessage):
                  count: int = None,
                  value: int = None,
                  crc_bytes: bytes = b'') -> None:
-        """
-        :param server_id: Intended Recipient's Server Id
-        :param function_code: Function Code of Request
-        :param address: Address to Start Reading OR Address to Write
-        :param count: Count of Registers to Read, Do Not Provide for Write Requests
-        :param value: Value to Write to Given Address, Do Not Provide for Read Requests
-        :param crc_bytes: crc16 Value of Request
-        """
-
         if count and value:
             raise RtuMessageError("Request may not contain both a count and a value")
 
@@ -195,6 +169,47 @@ class RtuRequest(RtuMessage):
     @property
     def value(self) -> int:
         return self._value
+
+
+class RtuResponse(RtuMessage):
+    """
+    Rtu Response Object
+
+    :param server_id:
+    :param function_code:
+    :param byte_count:
+    :param response_data:
+    :crc_bytes:
+    """
+    _byte_count: int
+    _response_data: list[int]
+
+    def __init__(self,
+                 server_id: int = None,
+                 function_code: int = None,
+                 byte_count: int = None,
+                 response_data: list[int] = None,
+                 crc_bytes: bytes = b'') -> None:
+
+        self._byte_count = byte_count
+        self._response_data = response_data
+
+        super().__init__(server_id=server_id,
+                         function_code=function_code,
+                         data_bytes=self._build_data(),
+                         crc_bytes=crc_bytes)
+
+    def _build_data(self) -> bytes:
+        byte_count_bytes = response_data_bytes = b''
+
+        if self._byte_count is not None:
+            byte_count_bytes = self._byte_count.to_bytes(BYTES_PER_BYTE_COUNT, 'big')
+
+        if self._response_data is not None:
+            for item in self._response_data:
+                response_data_bytes += item.to_bytes(BYTES_PER_VALUE, 'big')
+
+        return byte_count_bytes + response_data_bytes
 
 
 class RtuMessageError(Exception):

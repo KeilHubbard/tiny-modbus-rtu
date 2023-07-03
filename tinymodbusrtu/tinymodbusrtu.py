@@ -45,9 +45,9 @@ class TinyModbusRtu:
         NOT SUPPORTED: ASCII Protocol, Modbus over TCP
 
     Allows the following messages:
-        Standard Modbus RTU Read requests
-        Standard Modbus RTU Write requests
-        Fully custom Modbus RTU requests
+        Standard Modbus RTU Read requests,
+        Standard Modbus RTU Write requests,
+        Fully custom Modbus RTU requests,
         Custom function code trigger requests
 
     Allows Optionally Disabling the CRC16 Validity check for Hobbyist Development
